@@ -51,9 +51,9 @@ public class WGraph_DS implements weighted_graph, Serializable {
             return false;
         }
         if (this.edges != null) {
-            if (this.edges.get(node1)!=null && this.edges.get(node2)!=null) {
+            if (this.edges.get(node1) != null && this.edges.get(node2) != null) {
                 if (this.edges.get(node1).get(node2) != null && this.edges.get(node2).get(node1) != null)//checks if &only if
-                     {
+                {
                     flag = true;
                 }
             }
@@ -71,7 +71,9 @@ public class WGraph_DS implements weighted_graph, Serializable {
     public node_info getNode(int key) {
         if (graphNodes != null) {
             if (graphNodes.containsKey(key)) return graphNodes.get(key);
+
         }
+
         return null;
     }
 
@@ -122,6 +124,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
 
     public void connect(int node1, int node2, double w) {
+        if (graphNodes.get(node1)==null||graphNodes.get(node2)==null){return;}
         boolean direction1 = false;
         boolean direction2 = false;
         boolean directioncheck1 = true;
@@ -291,6 +294,8 @@ public class WGraph_DS implements weighted_graph, Serializable {
         @Override
         public int getKey() {
             return this.key;
+
+
         }
 
         @Override
