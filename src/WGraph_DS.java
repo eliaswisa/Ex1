@@ -1,9 +1,7 @@
 package ex1.src;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 public class WGraph_DS implements weighted_graph, Serializable {
     private HashMap<Integer, node_info> graphNodes = new HashMap<Integer, node_info>();
@@ -61,6 +59,12 @@ public class WGraph_DS implements weighted_graph, Serializable {
         return flag;
     }
 
+    public Set<Integer> getNiOfNode(int key) {
+        if (graphNodes.get(key) == null) return new HashSet<Integer>();
+        if (this.edges.get(key) == null) return new HashSet<Integer>();
+        return this.edges.get(key).keySet();
+    }
+
     /**
      * gets node from the Wgraph map by inputing key
      *
@@ -115,6 +119,15 @@ public class WGraph_DS implements weighted_graph, Serializable {
     }
 
     /**
+     *  Function that sets all the nodes in the graph to -1
+     */
+    public void setTagstoUnvisited() {
+        for (node_info nod : this.getV()) {
+           nod.setTag(-1);
+        }
+    }
+
+    /**
      * connect between two nodes an edge who got w as weight
      *
      * @param node1
@@ -124,7 +137,9 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
 
     public void connect(int node1, int node2, double w) {
-        if (graphNodes.get(node1)==null||graphNodes.get(node2)==null){return;}
+        if (graphNodes.get(node1) == null || graphNodes.get(node2) == null) {
+            return;
+        }
         boolean direction1 = false;
         boolean direction2 = false;
         boolean directioncheck1 = true;
