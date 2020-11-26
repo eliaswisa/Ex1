@@ -124,6 +124,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
     public void setTagstoUnvisited() {
         for (node_info nod : this.getV()) {
            nod.setTag(-1);
+           nod.setInfo("");
         }
     }
 

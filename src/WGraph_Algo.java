@@ -1,12 +1,11 @@
 package ex1.src;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class WGraph_Algo implements weighted_graph_algorithms {
     private WGraph_DS graph;
+    private List<node_info> emptyList = new ArrayList<node_info>();
 
     @Override
     public void init(weighted_graph g) {
@@ -27,16 +26,16 @@ public class WGraph_Algo implements weighted_graph_algorithms {
     public boolean isConnected() {
         //get all the nodes to iterator
         //if (graph.getV().isEmpty()){return false;}
-        Iterator it=graph.getV().iterator();
-        if(it.hasNext()) {
+        Iterator it = graph.getV().iterator();
+        if (it.hasNext()) {
             node_info node = (node_info) it.next();
             //choose one node and then operate fbs on it(it will try to each node to tag=1.
             bfsNodesTagging(node);
         }
         //then we will check if any one of the tags is unvisited. if it unvisited so return false and the graph is not connected
-        Iterator isTaggedNode=graph.getV().iterator();
-        while(isTaggedNode.hasNext()){
-            if(((node_info) isTaggedNode.next()).getTag()==-1)return false;
+        Iterator isTaggedNode = graph.getV().iterator();
+        while (isTaggedNode.hasNext()) {
+            if (((node_info) isTaggedNode.next()).getTag() == -1) return false;
         }
         return true;
     }
@@ -88,16 +87,77 @@ public class WGraph_Algo implements weighted_graph_algorithms {
         return pathLength;
     }
 
+    private Queue<node_info> tagNodesToMaxValue(node_info src) {
+        //the queue that we will use
+        Queue<node_info> notVisited = new LinkedList<>();
+        double tempTag = src.getTag();
+        for (node_info i : this.graph.getV()) {
+            if (i.getKey() != src.getKey()) {
+                i.setTag(Integer.MAX_VALUE);
+                i.setInfo("Not connected");
+            } else {
+                i.setTag(0);
+                i.setInfo("" + i.getKey());
+                notVisited.add(i);
+            }
+        }
+
+        return notVisited;
+    }
+
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        //edge condition if one  of them is not exist
+        if (this.graph.getNode(dest) == null) return -1;
+        if (this.graph.getNode(src) == null) return -1;
+
+        //function that sets all tags to -1
+        graph.setTagstoUnvisited();
+
+        //sets all tags to MAX INTEGER (infinity)and sets the src tag to 0.  -->sets info to not connected and sets the src node info field to lists of nodes in the path(adds new one)
+        Queue<node_info> notVisited = tagNodesToMaxValue(graph.getNode(src));
+
+        while (!notVisited.isEmpty()) {
+            node_info tempNode = notVisited.poll();
+            double tempNodeTagDistance = tempNode.getTag();
+            for (int nodeKey : this.graph.getNiOfNode(tempNode.getKey())) {
+                node_info temp = this.graph.getNode(nodeKey);
+                double nodeKeyDistance = temp.getTag();
+                double weight = this.graph.getEdge(temp.getKey(), tempNode.getKey());
+                if (nodeKeyDistance > tempNodeTagDistance) {
+                    temp.setTag(tempNodeTagDistance + weight);
+                    temp.setInfo(tempNode.getInfo() + "-" + temp.getKey());
+                    notVisited.add(temp);
+                }
+            }
+        }
+        double srcSumWeight = this.graph.getNode(dest).getTag();
+        if (srcSumWeight == Integer.MAX_VALUE) {
+            return -1;
+        }
+        return srcSumWeight;
     }
 
     @Override
     public List<node_info> shortestPath(int src, int dest) {
-        return null;
+//        //edge condition check
+        if (this.graph.getNode(src) == null) return emptyList;
+        if (this.graph.getNode(dest) == null) return emptyList;
+        double a = shortestPathDist(src, dest);
+        node_info node1 = this.graph.getNode(dest);
+        String path = this.graph.getNode(dest).getInfo();
+        String[] arr = path.split("(?<=-)");
+        List<Integer> num = new ArrayList<Integer>();
+        List<node_info> li = new ArrayList<node_info>();
+        for (int i = 0; i < arr.length; i++) {
+            String temp = arr[i];
+            temp = temp.replace("-", "");
+            int ab = Integer.parseInt(temp);
+            num.add(ab);
+            li.add(this.graph.getNode(ab));
+        }
+        return li;
     }
-
     @Override
     public boolean save(String file) {
         return false;
