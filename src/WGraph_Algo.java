@@ -1,9 +1,10 @@
 package ex1.src;
 
+import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class WGraph_Algo implements weighted_graph_algorithms {
+public class WGraph_Algo implements weighted_graph_algorithms{
     private WGraph_DS graph;
     private List<node_info> emptyList = new ArrayList<node_info>();
 
@@ -48,17 +49,12 @@ public class WGraph_Algo implements weighted_graph_algorithms {
      */
     private int bfsNodesTagging(node_info src) {
 
-        //choosed 1 because we start the algorithm from first node.(so counting starts from 1)
 
-        // set as false)
-        // boolean visited[] = new boolean[V];
-        // Mark all the vertices as not visited(By default)
         for (node_info tempNode : this.graph.getV()) {
             tempNode.setTag(-1);
         }
-        // Create a queue for BFS
+
         Queue<node_info> unvisitedQueue = new LinkedList<node_info>();
-        // Mark the current first node as visited and enqueue it
         src.setTag(1);
         unvisitedQueue.add(src);
         int pathLength = 1;
@@ -160,12 +156,38 @@ public class WGraph_Algo implements weighted_graph_algorithms {
     }
     @Override
     public boolean save(String file) {
-        return false;
+        try {
+            FileOutputStream fOutput = new FileOutputStream(file);
+            ObjectOutputStream objectOutput = new ObjectOutputStream(fOutput);
+            objectOutput.writeObject(this.graph);
+
+        }
+        catch (FileNotFoundException er){
+            return false;
+        }
+
+        catch (IOException er) {
+            er.printStackTrace();
+            return false;
+        }
+        return true;
     }
+
 
     @Override
     public boolean load(String file) {
-        return false;
+
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            this.init((weighted_graph) ois.readObject());
+
+        } catch (IOException | ClassNotFoundException er) {
+            er.printStackTrace();
+            return false;
+
+        }
+        return true;
     }
 }
-//

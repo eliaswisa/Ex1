@@ -26,14 +26,22 @@ public class WGraph_DS implements weighted_graph, Serializable {
      * @param g
      */
     public WGraph_DS(weighted_graph g) {
-        // TODO: 23/11/2020 check the copy constructor
-        if (g != null && g.getV() != null) {
-            graphNodes = new HashMap<>();
-            for (node_info nodes : g.getV()) {
-                graphNodes.put(nodes.getKey(), new NodeData(nodes));
-            }//copy every vertex from vertices list of g
-            edgesCounter = g.edgeSize();
+        for (node_info i : g.getV()){
+            this.graphNodes.put(i.getKey(), new NodeData((NodeData) i));
         }
+
+        for (node_info i : g.getV()){
+
+            for(node_info j : g.getV(i.getKey())){
+
+                if (g.hasEdge(i.getKey(), j.getKey())){
+                    this.connect(i.getKey(), j.getKey(),g.getEdge(i.getKey(), j.getKey()));
+                }
+            }
+        }
+        this.edgesCounter = g.edgeSize();
+        this.MC = g.getMC();
+        this.verticesCount = g.nodeSize();
     }
 
     /***
@@ -123,8 +131,8 @@ public class WGraph_DS implements weighted_graph, Serializable {
      */
     public void setTagstoUnvisited() {
         for (node_info nod : this.getV()) {
-           nod.setTag(-1);
-           nod.setInfo("");
+            nod.setTag(-1);
+            nod.setInfo("");
         }
     }
 
@@ -247,7 +255,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
     }
 
     /////////////////////////inner class of node info
-    protected class NodeData implements node_info {
+    protected class NodeData implements node_info,Serializable {
         ///////fill  the fields
         private int key;
         private String info;
@@ -288,24 +296,21 @@ public class WGraph_DS implements weighted_graph, Serializable {
         /**
          * copy constructor
          *
-         * @param n
+         * @param nodeData
          */
         // TODO: 24/11/2020 write node_info copy constructor
-        public NodeData(node_info n) {
+        public NodeData(NodeData nodeData) {
+            this.key = nodeData.getKey();
+            this.info = nodeData.getInfo();
+            this.tag = nodeData.getTag();
 
 
-            //            this.key = n.getKey();
-//            this.info = n.getInfo();
-//            allNodeNi = new HashMap<>();
-//            for (int i : ((NodeInfo) n).allNodeNi.keySet()) {
-//                allNodeNi.put(i, ((NodeInfo) n).allNodeNi.get(i));
-//            }
         }
 
-        public boolean hasNi(int key)// check if there's node between this node and a given node(by key)
-        {
-            return graphNodes.containsKey(key);
-        }
+//        public boolean hasNi(int key)// check if there's node between this node and a given node(by key)
+//        {
+//            return graphNodes.containsKey(key);
+//        }
 
         @Override
         public int getKey() {
